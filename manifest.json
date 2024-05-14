@@ -1,0 +1,44 @@
+{
+    "manifest_version": 3,
+    "name": "SuperSync",
+    "version": "1.0",
+    "background": {
+        "service_worker": "sw.js"
+    },
+    "side_panel": {
+        "default_path": "sidepanel.html"
+    },
+    "action": {
+        "default_title": "Click to open panel",
+        "default_icon": {
+            "32": "logo.png"
+        }
+    },
+    "permissions": [
+        "storage",
+        "tabs",
+        "activeTab",
+        "alarms",
+        "downloads",
+        "scripting",
+        "sidePanel"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>",
+                "*://*/"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "host_permissions": [
+        "*://*/"
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self';",
+        "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';"
+    }
+}
