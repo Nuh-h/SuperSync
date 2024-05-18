@@ -6,7 +6,6 @@ chrome.alarms.create({ delayInMinutes: 0, periodInMinutes: 15 });
 
 chrome.alarms.onAlarm.addListener(async () => {
     console.log("Alarm has elapsed, time is " + (new Date()).toLocaleTimeString());
-    // const tabs = await chrome.tabs.query({});
     let queryOptions = { active: true, lastFocusedWindow: true };
     let [activeTab] = await chrome.tabs.query(queryOptions);
 
