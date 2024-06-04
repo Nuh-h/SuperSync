@@ -1,53 +1,104 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>SuperSync</title>
   </head>
   <style>
-    .jobs {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+    body {
+      max-width: 596px;
+      margin: auto;
+      padding-inline: 1rem;
+      padding-bottom: 2rem;
     }
 
-    .jobs li{
-        padding: 1rem;
-        border: 0.1em solid royalblue;
-        border-radius: 1em;
-        box-shadow: 2px 2px royalblue;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        background:linear-gradient(184deg, #1183f0, transparent)
+    .jobs {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      list-style-type: none;
+      margin: 0;
+      justify-content: center;
+      margin-top: 1em;
     }
+
+    .jobs li {
+      padding: 1rem;
+      border: 0.1em solid royalblue;
+      border-radius: 1em;
+      box-shadow: 2px 2px royalblue;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: linear-gradient(184deg, #1183f0, transparent)
+    }
+
     .jobs li p {
-        margin:0;
-        font-weight: bold;
-        font-size: 1rem;
-        line-height: 1rem;
+      margin: 0;
+      font-weight: bold;
+      font-size: 1rem;
+      line-height: 1rem;
     }
+
     .logo {
-        width: 80px;
-        float: right;
-        border: 2px solid #3498db;
-        border-radius: 1rem;
-        padding: 0.5rem;
+      width: 80px;
+      float: right;
+      border: 2px solid #3498db;
+      border-radius: 1rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      width: fit-content;
+      padding: 0.5em;
+      background: rgb(0, 132, 220);
+      color: white;
+      border-radius: 0.5em;
+      border: none;
+      cursor: pointer;
+    }
+
+    .jobs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      align-content: center;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      margin: 0;
+      padding: 0;
+    }
+
+    details {
+      width: 100%;
+    }
+
+    summary {
+      font-weight: bold;
     }
   </style>
+
   <body>
-    <img class="logo" src="./logo.png"/>
-    <h1><div style="font-size: 2rem;"><span style="color: #3498db;">Super</span><span style="color:#f1c40f">Sync</span></div> for Synergist</h1>
+    <img class="logo" src="./logo.png" />
+    <h1>
+      <div style="font-size: 2rem;"><span style="color: #3498db;">Super</span><span style="color:#f1c40f">Sync</span>
+      </div> for Synergist
+    </h1>
     <p class="text-2xl">Quickly view your time logs, and worry-no-more about estimations!</p>
-    <h2> Today </h2>
-    <ul class="jobs">
-        <!-- <li>
-            <time>9:15</time>
-            <p>SOH Standup</p>
-        </li> -->
-    </ul>
+    <div class="jobs-container">
+      <details>
+        <summary> Today </h2>
+          <ul class="jobs">
+            <!-- <li>
+              <time>9:15</time>
+              <p>SOH Standup</p>
+          </li> -->
+          </ul>
+      </details>
+    </div>
   </body>
   <script src="sidepanel.js"></script>
 </html>

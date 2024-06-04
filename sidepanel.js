@@ -1,34 +1,114 @@
-chrome.storage.local.get(null, (resultObject) => {
-    updateList(resultObject);
-});
+// Function to update the side panel list
+function updateSidePanelList(data) {
+    const resultObject = groupByRelativeTime(data)
 
-chrome.storage.local.onChanged.addListener((changes) => {
-    const key = Object.keys(changes)[0];
-    const value = changes[key].newValue;
-    let list = document.querySelector(".jobs");
-    list = `<li>
-        <time>${new Date(key).toLocaleTimeString()}</time>
-        <p>${value}</p>
-    </li>`+ list.innerHTML;
-    // chrome.storage.session.get(null, (resultObject) => {
-    //     updateList(resultObject);
-    // });
-});
+    const jobsContainer = document.querySelector(".jobs-container");
+    jobsContainer.innerHTML = ""; // Clear the existing list
+    Object.entries(resultObject).reverse().forEach(([relativeTime, jobs], index) => {
+        const list = document.createElement("ul");
+        list.classList.add("jobs");
 
-function updateList(resultObject) {
+        const listItems = Array.from(jobs)
+            .reverse()
+            .map(({ timestamp, value }) => {
+                const li = document.createElement("li");
 
-    let list = document.querySelector(".jobs");
-    let listChildren = "";
+                console.log({ timestamp, value });
 
-    Object.entries(resultObject).reverse().forEach(([key, value]) => {
-        listChildren += `<li>
-        <time>${new Date(key).toLocaleTimeString()}</time>
-        <p>${value}</p>
-    </li>`
-    });
+                const time = document.createElement("time");
+                time.textContent = new Date(timestamp).toLocaleTimeString();
+                li.appendChild(time);
 
-    if (listChildren.length > 0) {
-        list.innerHTML = "";
-        list.innerHTML += listChildren;
-    }
+                const p = document.createElement("p");
+                p.textContent = value;
+                li.appendChild(p);
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("delete-btn");
+                deleteBtn.setAttribute("data-item-id", timestamp);
+                deleteBtn.textContent = "Delete";
+                li.appendChild(deleteBtn);
+
+                deleteBtn.addEventListener("click", () => {
+                    const itemId = deleteBtn.getAttribute("data-item-id");
+                    if (itemId) {
+                        chrome.storage.local.remove(itemId).then(refreshSidePanel);
+                    }
+                });
+
+                return li;
+            });
+
+        listItems.forEach((li) => list.appendChild(li));
+
+        const details = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = relativeTime;
+
+        details.appendChild(summary);
+        details.appendChild(list);
+        if (index === 0) details.setAttribute("open", "true");
+
+        jobsContainer.appendChild(details);
+    })
 }
+
+// Function to refresh the side panel
+function refreshSidePanel() {
+    chrome.storage.local.get(null, (resultObject) => {
+        const resultCopy = Object.assign({}, resultObject);
+        delete resultCopy.lastItem;
+
+        updateSidePanelList(resultCopy);
+        console.log("Successful refresh");
+    });
+}
+
+function groupByRelativeTime(data) {
+    const entries = Object.entries(data);
+
+    const groupedByRelativeTime = entries.reduce((acc, [timestamp, value]) => {
+
+        const date = new Date(timestamp);
+        const today = new Date();
+        const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+        const thisWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+        const lastWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 7);
+
+        let relativeTime;
+        if (date.toDateString() === today.toDateString()) {
+            relativeTime = "Today";
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            relativeTime = "Yesterday";
+        } else if (date >= thisWeekStart && date < today) {
+            relativeTime = "This Week";
+        } else if (date >= lastWeekStart && date < thisWeekStart) {
+            relativeTime = "Last Week";
+        } else {
+            relativeTime = "Older";
+        }
+
+        if (!acc[relativeTime]) {
+            acc[relativeTime] = [];
+        }
+        acc[relativeTime].push({ timestamp, value });
+        return acc;
+    }, {});
+
+    return groupedByRelativeTime;
+}
+
+// Listen for storage changes and refresh the side panel
+chrome.storage.local.onChanged.addListener(() => {
+    refreshSidePanel();
+});
+
+// Listen for messages from the content script and refresh the side panel
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === "storageUpdated") {
+        console.log("Storage updated");
+        refreshSidePanel();
+    }
+});
+
+refreshSidePanel();
